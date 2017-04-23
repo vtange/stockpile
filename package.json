@@ -1,0 +1,31 @@
+{
+  "name": "stockpiler",
+  "version": "1.0.0",
+  "description": "daily collector of some stock data.",
+  "main": "server.js",
+  "dependencies": {
+    "bluebird": "^3.5.0",
+    "body-parser": "~1.0.0",
+    "cookie-parser": "~1.0.0",
+    "express": "^4.13.3",
+    "moment": "^2.18.1",
+    "mongoose": "^4.9.4",
+    "morgan": "~1.0.0",
+    "node-schedule": "^1.2.1",
+    "request": "^2.81.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "Victor Tang",
+  "license": "ISC",
+  "engines": {
+    "node": "0.10.x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vtange/stockpiler"
+  }
+}
