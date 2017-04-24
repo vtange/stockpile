@@ -1,7 +1,7 @@
 //for mongoDB interaction routes
 var Day = require('./day');
 var request = require('request');
-
+var interestingStocks = [];
 
 function process(temp)
 {
@@ -55,6 +55,18 @@ function todayIsTheSameAs(YESTERDAY, dataToday)
 	return same;
 }
 
+function evaluateDay(YESTERDAY, DAY){
+    var pattern = "";
+
+/*
+    if(pattern == "shooting star")
+    {
+        sendMail(SYMBOL, DAY.date);
+    }
+*/
+    //need to send only at the end of day
+}
+
 function getAndUpdate(SYMBOL, STOCK, TODAY){
 		//collect stock info
 
@@ -104,6 +116,10 @@ function getAndUpdate(SYMBOL, STOCK, TODAY){
 				//it's a new day...
 				var DAY = newDay(SYMBOL, dayData, TODAY);
 
+				//check if the day is a clear pattern
+				evaluateDay(YESTERDAY, DAY);
+				interestingStocks.push(SYMBOL);
+
 				//save the DAY
 				DAY.save(function(err){
 					if(err)
@@ -126,4 +142,7 @@ function getAndUpdate(SYMBOL, STOCK, TODAY){
     });
 };
 
-exports = module.exports = getAndUpdate;
+exports = module.exports = {
+	update: getAndUpdate,
+	arrStocks: interestingStocks
+};
