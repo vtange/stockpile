@@ -46,8 +46,11 @@ require('./routes/routes.js')(app);
 var transporter = nodemailer.createTransport({
 service: 'Gmail',
 auth: {
-	user: auth.gmail_u,
-	pass: auth.gmail_p
+	type: 'OAuth2',
+	user: auth.source_email,
+	clientId: auth.client_id,
+	clientSecret: auth.client_secret,
+	refreshToken: auth.refresh_token
 }
 });
 
@@ -69,7 +72,7 @@ function updateStocks(){
 			for(var i = stocks.length-1; i>=0; i--)
 			{
 				//space it out to not kill Yahoo
-				window.setTimeout(function(){
+				setTimeout(function(){
 					var stock = stocks[i];
 					console.log("updating "+stock.ticker);
 					collector.update(stock.ticker, stock, getToday());
@@ -97,15 +100,18 @@ function sendMail(date){
 
 // TEMP TEST: HARD CODE SOME STOCKS, TEST-GET SOME DATA;
 var starterStocks = ["AMZN", "CMG", "PCLN", "TSLA", "GOOG", "MSFT"];
-starterStocks.forEach(function(ticker){
-	var stock = newStock(ticker);
-	console.log("adding  "+stock.ticker);
-	collector.update(stock.ticker, stock, getToday());
+starterStocks.forEach(function(ticker,idx){
+	setTimeout(function(){
+		var stock = newStock(ticker);
+		console.log("adding  "+stock.ticker);
+		collector.update(stock.ticker, stock, getToday());
+	},idx*2000*Math.random());
 })
 
 setTimeout(function(){
 	sendMail(getToday());
-},30000);
+	console.log("starter email is sent! we are good to go");
+},20000);
 
 //let Heroku/other host set port, else default 3000, and then listen
 var port     = process.env.PORT || 3000;
