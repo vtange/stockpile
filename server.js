@@ -62,7 +62,7 @@ function getToday(){
 function updateStocks(){
 	var ticker = req.body.ticker.toUpperCase();
 	//check mongoDB
-	Stock.find({},function(err, stocks){
+	Stock.find({}).populate('yesterday').exec(function(err, stocks){
 		if(err)
 		{
 			console.log(err);
@@ -102,9 +102,22 @@ function sendMail(date){
 var starterStocks = ["AMZN", "CMG", "PCLN", "TSLA", "GOOG", "MSFT"];
 starterStocks.forEach(function(ticker,idx){
 	setTimeout(function(){
-		var stock = newStock(ticker);
-		console.log("adding  "+stock.ticker);
-		collector.update(stock.ticker, stock, getToday());
+		Stock.findOne({ticker: ticker}).populate('yesterday').exec(function(err, stock){
+			if(err)
+			{
+				throw err;
+			}
+			if(!stock)
+			{
+				stock = newStock(ticker);
+				console.log("adding  "+stock.ticker);
+			}
+			else
+			{
+				console.log("already found starter stock "+stock.ticker);
+			}
+			collector.update(stock.ticker, stock, getToday());
+		});
 	},idx*2000*Math.random());
 })
 

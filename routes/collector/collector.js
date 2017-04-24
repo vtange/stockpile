@@ -58,6 +58,7 @@ function todayIsTheSameAs(YESTERDAY, dataToday)
 function evaluateDay(YESTERDAY, DAY){
     var pattern = "";
 
+	interestingStocks.push(YESTERDAY.ticker);
 /*
     if(pattern == "shooting star")
     {
@@ -100,6 +101,13 @@ function getAndUpdate(SYMBOL, STOCK, TODAY){
 			m2: Day’s Range (Realtime)
 		*/
 	var YESTERDAY = STOCK.yesterday;
+	if(YESTERDAY.date == TODAY)
+	{
+		"YESTERDAY's date ("+YESTERDAY.date+") is equal to today ("+TODAY+"), so we don't need to poll for data."; 
+		return;
+	}
+
+	//get new data
 	var url = "http://finance.yahoo.com/d/quotes.csv?s="+SYMBOL+"&f=oghc1v";
     request.get(url, function (error, result) {
         var value = result.body;
@@ -118,7 +126,6 @@ function getAndUpdate(SYMBOL, STOCK, TODAY){
 
 				//check if the day is a clear pattern
 				evaluateDay(YESTERDAY, DAY);
-				interestingStocks.push(SYMBOL);
 
 				//save the DAY
 				DAY.save(function(err){
