@@ -1,6 +1,6 @@
 # stockpiler
 
 ## Tech
-Express, node-scheduler, Yahoo Finance API(request + q), Q module
+Express, node-scheduler, nodemailer, Yahoo Finance API
 
 ## Niceties && Details
