@@ -122,8 +122,11 @@ starterStocks.forEach(function(ticker,idx){
 })
 
 setTimeout(function(){
-	sendMail(getToday());
-	console.log("starter email is sent! we are good to go");
+	if(collector.arrStocks.length > 0)
+	{
+		sendMail(getToday());
+		console.log("starter email is sent! we are good to go");
+	}
 },20000);
 
 //let Heroku/other host set port, else default 3000, and then listen

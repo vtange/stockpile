@@ -55,17 +55,71 @@ function todayIsTheSameAs(YESTERDAY, dataToday)
 	return same;
 }
 
+function getChg(day)
+{
+	return DAY.close - DAY.open;
+}
+
+function getPctChg(day)
+{
+	return (getChg(day)/day.open) * 100;
+}
+
+function getRng(day)
+{
+	return day.high - day.low;
+}
+
+function getPctRng(day)
+{
+	return (getRng(day)/day.open) * 100;
+}
+
+function getBull(day)
+{
+	return day.close > day.open;
+}
+
 function evaluateDay(YESTERDAY, DAY){
     var pattern = "";
+	var gap = DAY.open - YESTERDAY.close;
+	var gapPct = (gap/YESTERDAY.close) * 100;
+	var dayPct = getPctChg(DAY);
+	var dayRng = getPctRng(DAY);
+	var yesPct = getPctChg(YESTERDAY);
+	var yesRng = getPctRng(YESTERDAY);
+	var bullDay = getBull(DAY);
+	var bullYes = getBull(YESTERDAY);
 
-	interestingStocks.push(YESTERDAY.ticker);
-/*
-    if(pattern == "shooting star")
-    {
-        sendMail(SYMBOL, DAY.date);
-    }
-*/
-    //need to send only at the end of day
+	if(gapPct > 1.5)
+	{
+		//check if evening star
+		if(dayPct < 0.5 && dayRng > 1.1)
+		{
+			pattern = "star";
+		}
+	}
+
+	if(dayPct > 1 && yesPct > 1) //sizeable fat candle
+	{
+		if(DAY.open > YESTERDAY.close && YESTERDAY.open < DAY.close && bullYes && !bullDay)
+		{
+			pattern = "dark cloud cover";
+		}
+		if(DAY.open < YESTERDAY.close && YESTERDAY.open > DAY.close && bullDay && !bullYes)
+		{
+			pattern = "piercing line";
+		}
+	}
+
+	if(pattern.length > 0)
+	{
+		interestingStocks.push({s:YESTERDAY.ticker, p:pattern});
+	}
+	else
+	{
+		console.log("no pattern for "+YESTERDAY.ticker);
+	}
 }
 
 function getAndUpdate(SYMBOL, STOCK, TODAY){
@@ -101,7 +155,7 @@ function getAndUpdate(SYMBOL, STOCK, TODAY){
 			m2: Day’s Range (Realtime)
 		*/
 	var YESTERDAY = STOCK.yesterday;
-	if(YESTERDAY.date == TODAY)
+	if(YESTERDAY && YESTERDAY.date == TODAY)
 	{
 		"YESTERDAY's date ("+YESTERDAY.date+") is equal to today ("+TODAY+"), so we don't need to poll for data."; 
 		return;
@@ -125,7 +179,14 @@ function getAndUpdate(SYMBOL, STOCK, TODAY){
 				var DAY = newDay(SYMBOL, dayData, TODAY);
 
 				//check if the day is a clear pattern
-				evaluateDay(YESTERDAY, DAY);
+				if(YESTERDAY)
+				{
+					evaluateDay(YESTERDAY, DAY);
+				}
+				else
+				{
+					console.log("no yesterday for "+DAY.ticker);
+				}
 
 				//save the DAY
 				DAY.save(function(err){
