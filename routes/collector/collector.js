@@ -57,7 +57,7 @@ function todayIsTheSameAs(YESTERDAY, dataToday)
 
 function getChg(day)
 {
-	return DAY.close - DAY.open;
+	return day.close - day.open;
 }
 
 function getPctChg(day)
